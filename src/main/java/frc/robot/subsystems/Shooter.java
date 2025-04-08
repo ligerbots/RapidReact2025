@@ -16,6 +16,7 @@ import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.SparkMaxConfig;
+import com.revrobotics.spark.config.ClosedLoopConfig.FeedbackSensor;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -49,31 +50,17 @@ public class Shooter extends SubsystemBase {
     public Shooter() {
         m_chuteMotor = new SparkMax(Constants.CHUTE_CAN_ID, MotorType.kBrushless);
 
+        SparkMaxConfig motorConfig = new SparkMaxConfig();
+        motorConfig.closedLoop.p(Constants.SHOOTER_KP).i(Constants.SHOOTER_KI).d(Constants.SHOOTER_KD);
+        motorConfig.closedLoop.feedbackSensor(FeedbackSensor.kPrimaryEncoder);
+        motorConfig.closedLoop.outputRange(-1, 1);
+
         m_topShooterMotor = new SparkMax(Constants.TOP_SHOOTER_CAN_ID, MotorType.kBrushless);
-        
-        SparkMaxConfig config = new SparkMaxConfig();
-        config.inverted(false);
-        m_topShooterMotor.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
-        // m_topShooterMotor.setInverted(false);
-
-        m_bottomShooterMotor = new SparkMax(Constants.BOTTOM_SHOOTER_CAN_ID, MotorType.kBrushless); 
-
-        // m_topPIDController = new PIDController(Constants.SHOOTER_KP, 0, 0);
-
-        // m_topPIDController = new PIDController(Constants.SHOOTER_KP, 0, 0);
-
-        // configure top pid
-        SparkMaxConfig topMotorConfig = new SparkMaxConfig();
-        topMotorConfig.closedLoop.p(Constants.SHOOTER_KP).i(Constants.SHOOTER_KI).d(Constants.SHOOTER_KD);
-
-        m_topShooterMotor.configure(topMotorConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+        m_topShooterMotor.configure(motorConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
         m_topPIDController = m_topShooterMotor.getClosedLoopController();
 
-        // configure bottom pid
-        SparkMaxConfig bottomMotorConfig = new SparkMaxConfig();
-        bottomMotorConfig.closedLoop.p(Constants.SHOOTER_KP).i(Constants.SHOOTER_KI).d(Constants.SHOOTER_KD);
-
-        m_bottomShooterMotor.configure(bottomMotorConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+        m_bottomShooterMotor = new SparkMax(Constants.BOTTOM_SHOOTER_CAN_ID, MotorType.kBrushless); 
+        m_bottomShooterMotor.configure(motorConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
         m_bottomPIDController = m_bottomShooterMotor.getClosedLoopController();
     }
 

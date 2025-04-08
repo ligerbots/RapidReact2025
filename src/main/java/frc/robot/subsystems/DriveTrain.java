@@ -83,9 +83,9 @@ public class DriveTrain extends SubsystemBase {
         // m_rightLeader.config_kF(0, Constants.DRIVETRAIN_KF);
         // m_rightLeader.setSensorPhase(true);
 
-        setMotorMode(NeutralModeValue.Coast);
+        setMotorMode(NeutralModeValue.Brake);
         
-        // m_differentialDrive = new DifferentialDrive(m_leftMotor::set, m_rightMotor::set);
+        m_differentialDrive = new DifferentialDrive(m_leftMotor::set, m_rightMotor::set);
         // m_differentialDrive.setSafetyEnabled(false);
 
         // // m_leftEncoder.setDistancePerPulse(Constants.ENCODER_DISTANCE_PER_PULSE);

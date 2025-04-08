@@ -133,8 +133,8 @@ public class Robot extends TimedRobot {
         if (m_autonomousCommand != null) {
             m_autonomousCommand.cancel();
         }
-        // m_robotContainer.getDriveCommand().schedule();
-        // m_robotContainer.getDriveTrain().setMotorMode(NeutralModeValue.Brake);
+
+        m_robotContainer.getDriveTrain().setMotorMode(NeutralModeValue.Brake);
         
         // // Set Climber motors to Brake mode
         // m_robotContainer.getClimber().setBrakeMode(true);
