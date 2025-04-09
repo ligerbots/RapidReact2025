@@ -86,7 +86,7 @@ public class DriveTrain extends SubsystemBase {
         setMotorMode(NeutralModeValue.Brake);
         
         m_differentialDrive = new DifferentialDrive(m_leftMotor::set, m_rightMotor::set);
-        // m_differentialDrive.setSafetyEnabled(false);
+        m_differentialDrive.setSafetyEnabled(false);
 
         // // m_leftEncoder.setDistancePerPulse(Constants.ENCODER_DISTANCE_PER_PULSE);
         // // m_rightEncoder.setDistancePerPulse(Constants.ENCODER_DISTANCE_PER_PULSE);
