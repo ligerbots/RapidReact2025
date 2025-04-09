@@ -18,7 +18,6 @@ import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import com.revrobotics.spark.config.ClosedLoopConfig.FeedbackSensor;
 
-import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
@@ -123,6 +122,11 @@ public class Shooter extends SubsystemBase {
     //     return m_bottomShooterMotor.getSelectedSensorVelocity() / Constants.FALCON_UNITS_PER_RPM;
     // }
 
+    public void setShooterSpeeds(double top, double bottom) {
+        m_topShooterMotor.set(top);
+        m_bottomShooterMotor.set(bottom);
+    }
+    
     public void setShooterRpms(double topRpm, double bottomRpm) {
         // double target_unitsPer100ms = target_RPM * Constants.kSensorUnitsPerRotation / 600.0; //RPM -> Native units
         // double targetVelocity_UnitsPer100ms = leftYstick * 2000.0 * 2048.0 / 600.0;

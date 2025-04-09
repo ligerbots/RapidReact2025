@@ -1,5 +1,6 @@
 package frc.robot.commands;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 
 import frc.robot.Constants;
@@ -52,6 +53,9 @@ public class ShooterCommand extends Command {
         m_distance = distance;
         m_upperHub = upperHub;
         m_useVision = false;
+
+        SmartDashboard.putString("shooter/cmdState", "INIT");
+
     }
 
     // Called when the command is initially scheduled.
@@ -86,13 +90,14 @@ public class ShooterCommand extends Command {
             //     // allows fall through to the next state if found the target
 
             case SPEED_UP_SHOOTER:
-                m_shooterSpeeds = Shooter.calculateShooterSpeeds(m_distance, m_upperHub);
-                System.out.println("distance " + m_distance + " chute speed " + m_shooterSpeeds.chute + " bottom " + m_shooterSpeeds.bottom 
-                        + " top " + m_shooterSpeeds.top);
+                // m_shooterSpeeds = Shooter.calculateShooterSpeeds(m_distance, m_upperHub);
+                // System.out.println("distance " + m_distance + " chute speed " + m_shooterSpeeds.chute + " bottom " + m_shooterSpeeds.bottom 
+                //         + " top " + m_shooterSpeeds.top);
 
                 // turn on the two motors on the shooter, let the chute and intake wait for the
                 // shots
-                m_shooter.setShooterRpms(m_shooterSpeeds.top, m_shooterSpeeds.bottom);
+                m_shooter.setShooterSpeeds(0.3, 0.3);
+                // m_shooter.setShooterRpms(m_shooterSpeeds.top, m_shooterSpeeds.bottom);
                 m_state = State.WAIT_FOR_SHOOTER;
                 m_shootDelay.start();
                 break;
@@ -107,7 +112,9 @@ public class ShooterCommand extends Command {
 
             case TURN_ON_CHUTE:
                 // turn on the chute once the shooter is ready
-                m_shooter.setChuteSpeed(m_shooterSpeeds.chute);
+                System.out.println("Turn on chute");
+
+                // m_shooter.setChuteSpeed(m_shooterSpeeds.chute);
                 m_state = State.WAIT_FOR_SHOOT_BALL1;
                 m_shootBall1Time.start();
                 break;
@@ -121,6 +128,7 @@ public class ShooterCommand extends Command {
                 }
             
             case TURN_ON_INTAKE:
+                System.out.println("Turn on intake");
                 m_intake.run(Constants.INTAKE_SHOOTING_SPEED);
                 m_shootBall2Time.start();
                 m_state = State.WAIT_FOR_SHOOT_BALL2;
@@ -130,12 +138,14 @@ public class ShooterCommand extends Command {
                 //State.WAIT_FOR_SHOOT_BALL2 checked in isFinished method
                 break;
         }
+
+        SmartDashboard.putString("shooter/cmdState", m_state.toString());
     }
 
     // Called once the command ends or is interrupted.
     @Override
     public void end(boolean interrupted) {
-        m_shooter.setShooterRpms(0.0, 0.0);
+        m_shooter.setShooterSpeeds(0.0, 0.0);
         m_shooter.setChuteSpeed(0.0);
         m_intake.run(0.0);
         // if (m_vision != null) m_vision.setMode(Vision.DEFAULT_MODE);
