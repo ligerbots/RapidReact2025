@@ -90,7 +90,7 @@ public class ShooterCommand extends Command {
             //     // allows fall through to the next state if found the target
 
             case SPEED_UP_SHOOTER:
-                // m_shooterSpeeds = Shooter.calculateShooterSpeeds(m_distance, m_upperHub);
+                m_shooterSpeeds = Shooter.calculateShooterSpeeds(m_distance, m_upperHub);
                 // System.out.println("distance " + m_distance + " chute speed " + m_shooterSpeeds.chute + " bottom " + m_shooterSpeeds.bottom 
                 //         + " top " + m_shooterSpeeds.top);
 
@@ -114,7 +114,7 @@ public class ShooterCommand extends Command {
                 // turn on the chute once the shooter is ready
                 System.out.println("Turn on chute");
 
-                // m_shooter.setChuteSpeed(m_shooterSpeeds.chute);
+                m_shooter.setChuteSpeed(m_shooterSpeeds.chute);
                 m_state = State.WAIT_FOR_SHOOT_BALL1;
                 m_shootBall1Time.start();
                 break;
