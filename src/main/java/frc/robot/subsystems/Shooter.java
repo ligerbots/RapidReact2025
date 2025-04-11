@@ -13,11 +13,14 @@ import com.revrobotics.spark.SparkBase.ControlType;
 import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkBase.ResetMode;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
+import com.revrobotics.spark.ClosedLoopSlot;
 import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import com.revrobotics.spark.config.ClosedLoopConfig.FeedbackSensor;
+import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
@@ -53,6 +56,7 @@ public class Shooter extends SubsystemBase {
         motorConfig.closedLoop.p(Constants.SHOOTER_KP).i(Constants.SHOOTER_KI).d(Constants.SHOOTER_KD);
         motorConfig.closedLoop.feedbackSensor(FeedbackSensor.kPrimaryEncoder);
         motorConfig.closedLoop.outputRange(-1, 1);
+        motorConfig.idleMode(IdleMode.kBrake);
 
         m_topShooterMotor = new SparkMax(Constants.TOP_SHOOTER_CAN_ID, MotorType.kBrushless);
         m_topShooterMotor.configure(motorConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
@@ -61,6 +65,11 @@ public class Shooter extends SubsystemBase {
         m_bottomShooterMotor = new SparkMax(Constants.BOTTOM_SHOOTER_CAN_ID, MotorType.kBrushless); 
         m_bottomShooterMotor.configure(motorConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
         m_bottomPIDController = m_bottomShooterMotor.getClosedLoopController();
+
+        SmartDashboard.putNumber("shooter/bottom_rpm", 0);
+        SmartDashboard.putNumber("shooter/top_rpm", 0);
+        SmartDashboard.putNumber("shooter/bottom_rpm_sp", 0);
+        SmartDashboard.putNumber("shooter/top_rpm_sp", 0);
     }
 
     public static class ShooterSpeeds {
@@ -110,17 +119,17 @@ public class Shooter extends SubsystemBase {
     // periodically update the values of motors for shooter to SmartDashboard
     @Override
     public void periodic() {
-        // SmartDashboard.putNumber("shooter/bottom_rpm", getBottomRpm());
-        // SmartDashboard.putNumber("shooter/top_rpm", getTopRpm());
+        SmartDashboard.putNumber("shooter/bottom_rpm", getBottomRpm());
+        SmartDashboard.putNumber("shooter/top_rpm", getTopRpm());
     }
 
-    // public double getTopRpm() {
-    //     return m_topShooterMotor.g getSelectedSensorVelocity() / Constants.FALCON_UNITS_PER_RPM;
-    // }
+    public double getTopRpm() {
+        return m_topShooterMotor.getEncoder().getVelocity();
+    }
 
-    // public double getBottomRpm() {
-    //     return m_bottomShooterMotor.getSelectedSensorVelocity() / Constants.FALCON_UNITS_PER_RPM;
-    // }
+    public double getBottomRpm() {
+        return m_bottomShooterMotor.getEncoder().getVelocity();
+    }
 
     public void setShooterSpeeds(double top, double bottom) {
         m_topShooterMotor.set(top);
@@ -128,6 +137,11 @@ public class Shooter extends SubsystemBase {
     }
     
     public void setShooterRpms(double topRpm, double bottomRpm) {
+        SmartDashboard.putNumber("shooter/bottom_rpm_sp", bottomRpm);
+        SmartDashboard.putNumber("shooter/top_rpm_sp", topRpm);
+
+        double feedforward = bottomRpm * Constants.SHOOTER_KF;
+
         // double target_unitsPer100ms = target_RPM * Constants.kSensorUnitsPerRotation / 600.0; //RPM -> Native units
         // double targetVelocity_UnitsPer100ms = leftYstick * 2000.0 * 2048.0 / 600.0;
         // double falconTop = topRpm * Constants.FALCON_UNITS_PER_RPM;
@@ -138,8 +152,8 @@ public class Shooter extends SubsystemBase {
         // double topMeasurement = m_topShooterMotor.getEncoder().getVelocity();
         // double bottomMeasurement = m_bottomShooterMotor.getEncoder().getVelocity();
 
-        m_topPIDController.setReference(topRpm, ControlType.kVelocity);
-        m_bottomPIDController.setReference(bottomRpm, ControlType.kVelocity);
+        m_topPIDController.setReference(topRpm, ControlType.kVelocity, ClosedLoopSlot.kSlot0, feedforward);
+        m_bottomPIDController.setReference(bottomRpm, ControlType.kVelocity, ClosedLoopSlot.kSlot0, feedforward);
 
         // Compute PID output (percent power)
         // double topOutput = m_topPIDController.calculate(topMeasurement, topRpm);

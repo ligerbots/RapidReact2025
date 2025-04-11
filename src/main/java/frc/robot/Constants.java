@@ -89,11 +89,11 @@ public final class Constants {
     // Following two CAN IDs are for the shooter subsystem
     public static final int TOP_SHOOTER_CAN_ID = 3; 
     public static final int BOTTOM_SHOOTER_CAN_ID = 4;
-    public static final double SHOOTER_KP = 0.005;     // CTRE example = 0.1
+    public static final double SHOOTER_KP = 0.000075;     // CTRE example = 0.1
     public static final double SHOOTER_KI = 0.0;   // CTRE example = 0.001
     public static final double SHOOTER_KD = 0.0;     // CTRE example = 5.0
     // From example code: kF: 1023 represents output value to Talon at 100%, 20660 represents Velocity units at 100% output
-    public static final double SHOOTER_KF = 1023.0/20660.0;  // CTRE example = 1023.0/20660.0
+    public static final double SHOOTER_KF = 0.0020;  // CTRE example = 1023.0/20660.0
 
     // amount of time to wait for the motors on shooters to speed up, later replaced with checking RPM
     public static final double SHOOTER_MOTOR_WAIT_TIME = 0.5;
